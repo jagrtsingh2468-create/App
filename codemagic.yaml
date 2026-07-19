@@ -1,0 +1,75 @@
+workflows:
+  android-release:
+    name: Voice Changer - Play Store Release (AAB)
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      android_signing:
+        - voice_changer_release
+      vars:
+        PACKAGE_NAME: "com.studiochaos.voicechanger"
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Generate launcher icons
+        script: |
+          dart run flutter_launcher_icons
+      - name: Write key.properties from Codemagic-managed keystore
+        script: |
+          cat > android/key.properties <<EOF2
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=$CM_KEYSTORE_PATH
+          EOF2
+      - name: Build signed release App Bundle
+        script: |
+          flutter build appbundle --release
+    artifacts:
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/mapping.txt
+    publishing:
+      email:
+        recipients: []
+        notify:
+          success: true
+          failure: true
+
+  android-apk-debug:
+    name: Voice Changer - Quick Test APK
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Generate launcher icons
+        script: |
+          dart run flutter_launcher_icons
+      - name: Build debug-signed release APK
+        script: |
+          flutter build apk --release --split-per-abi
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+    publishing:
+      email:
+        recipients: []
+        notify:
+          success: true
+          failure: true

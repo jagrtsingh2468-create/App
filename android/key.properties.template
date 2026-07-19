@@ -1,0 +1,6 @@
+# Copy this file to "key.properties" (same folder) and fill in your real values.
+# NEVER commit the real key.properties or your .jks keystore file to git.
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=upload
+storeFile=/absolute/path/to/upload-keystore.jks
