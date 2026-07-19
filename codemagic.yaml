@@ -19,9 +19,6 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter pub get
-      - name: Generate launcher icons
-        script: |
-          flutter pub run flutter_launcher_icons:main
       - name: Write key.properties from Codemagic-managed keystore
         script: |
           cat > android/key.properties <<EOF2
@@ -60,9 +57,6 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter pub get
-      - name: Generate launcher icons
-        script: |
-          flutter pub run flutter_launcher_icons:main
       - name: Build debug-signed release APK
         script: |
           flutter build apk --release --split-per-abi
