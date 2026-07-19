@@ -38,7 +38,8 @@ workflows:
       - build/app/outputs/mapping.txt
     publishing:
       email:
-        recipients: []
+        recipients:
+          - jagrtsingh2468@gmail.com
         notify:
           success: true
           failure: true
@@ -69,7 +70,8 @@ workflows:
       - build/app/outputs/flutter-apk/*.apk
     publishing:
       email:
-        recipients: []
+        recipients:
+          - jagrtsingh2468@gmail.com
         notify:
           success: true
           failure: true
