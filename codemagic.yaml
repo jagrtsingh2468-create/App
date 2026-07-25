@@ -54,6 +54,9 @@ workflows:
         - pattern: 'main'
           include: true
     scripts:
+      - name: Clean build
+        script: |
+          flutter clean
       - name: Get Flutter packages
         script: |
           flutter pub get
