@@ -14,7 +14,7 @@ dependencies:
   provider: ^6.1.2                     # Simple, battle-tested state management
 
   # ---- Audio recording / playback ----
-  record: ^5.1.2                       # Records microphone input to file (AAC/WAV)
+  record: ^6.0.0                       # Records microphone input to file (AAC/WAV)
   audioplayers: ^6.0.0                 # Plays processed audio, supports looping/seeking
 
   # ---- Audio effects processing ----
