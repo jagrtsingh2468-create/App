@@ -18,7 +18,7 @@ dependencies:
   audioplayers: ^6.0.0                 # Plays processed audio, supports looping/seeking
 
   # ---- Audio effects processing ----
-  ffmpeg_kit_flutter_new: ^1.6.0       # Maintained fork of ffmpeg_kit_flutter (original retired).
+  ffmpeg_kit_flutter_new: ^4.1.0       # Maintained fork of ffmpeg_kit_flutter (original retired).
                                         # Used to apply pitch/speed/echo/reverb filters offline.
 
   # ---- File & permission handling ----
