@@ -24,7 +24,7 @@ apply plugin: 'dev.flutter.flutter-gradle-plugin'
 
 android {
     namespace = "com.studiochaos.voicechanger"
-    compileSdk = 34
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -40,7 +40,7 @@ android {
         applicationId = "com.studiochaos.voicechanger"
         // Android 8.0 (API 26) minimum, as required
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
         multiDexEnabled = true
