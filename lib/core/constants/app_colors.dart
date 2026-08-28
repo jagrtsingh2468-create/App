@@ -15,6 +15,6 @@ class AppColors {
   static const Color lightSurface = Color(0xFFFFFFFF);
 
   // Dark theme surfaces
-  static const Color darkBackground = Color(0xFF121016);
-  static const Color darkSurface = Color(0xFF1E1B24);
+  static const Color darkBackground = Color(0xFF000000);
+  static const Color darkSurface = Color(0xFF0A0A0D);
 }

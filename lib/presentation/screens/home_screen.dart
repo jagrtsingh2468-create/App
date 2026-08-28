@@ -6,6 +6,7 @@ import '../providers/recorder_provider.dart';
 import '../providers/theme_provider.dart';
 import 'library_screen.dart';
 import 'record_screen.dart';
+import 'settings_screen.dart';
 
 /// App entry screen. Two big primary actions (record / import) plus quick
 /// access to the saved-recordings library and the theme toggle.
@@ -57,7 +58,14 @@ class HomeScreen extends StatelessWidget {
             ),
             icon: const Icon(Icons.library_music_rounded),
           ),
-          const SizedBox(width: 4),
+          IconButton(
+              tooltip: 'Settings',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              ),
+              icon: const Icon(Icons.settings_rounded),
+            ),
+            const SizedBox(width: 4),
         ],
       ),
       body: SafeArea(

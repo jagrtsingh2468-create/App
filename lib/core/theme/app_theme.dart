@@ -23,10 +23,10 @@ class AppTheme {
       brightness: Brightness.dark,
     ).copyWith(secondary: AppColors.accent);
 
-    return _base(scheme, AppColors.darkBackground);
+    return _base(scheme, AppColors.darkBackground, cardColor: const Color(0xFF0A0A0A));
   }
 
-  static ThemeData _base(ColorScheme scheme, Color background) {
+  static ThemeData _base(ColorScheme scheme, Color background, {Color? cardColor}) {
     final textTheme = GoogleFonts.plusJakartaSansTextTheme(
       ThemeData(brightness: scheme.brightness).textTheme,
     );
@@ -47,7 +47,7 @@ class AppTheme {
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: scheme.surfaceContainerHigh,
+        color: cardColor ?? scheme.surfaceContainerHigh,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
