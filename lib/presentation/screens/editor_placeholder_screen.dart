@@ -25,18 +25,9 @@ class EditorPlaceholderScreen extends StatelessWidget {
                 child: const Icon(Icons.tune_rounded, color: Colors.white, size: 40),
               ),
               const SizedBox(height: 24),
-              Text(
-                'Editor coming soon',
-              Text(
-                'Editor coming soon',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
+              Text('Editor coming soon', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
-              Text(
-                'Waveform view, pitch, speed, echo and reverb controls with fast preview are on the way.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
-              ),
+              Text('Waveform view, pitch, speed, echo and reverb controls with fast preview are on the way.', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant)),
             ],
           ),
         ),

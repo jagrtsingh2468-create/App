@@ -37,7 +37,7 @@ class VoiceEffect {
     required this.type,
     required this.label,
     required this.emoji,
-    required this.icon,
+    this.icon = Icons.graphic_eq_rounded,
     required this.description,
     required this.ffmpegFilter,
   });
