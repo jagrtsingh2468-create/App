@@ -6,7 +6,7 @@ import 'domain/repositories/audio_repository.dart';
 import 'presentation/providers/library_provider.dart';
 import 'presentation/providers/recorder_provider.dart';
 import 'presentation/providers/theme_provider.dart';
-import 'presentation/screens/home_screen.dart';
+import 'presentation/screens/main_nav_shell.dart';
 
 void main() {
   // Catch and log any uncaught Flutter framework errors instead of letting
@@ -53,7 +53,7 @@ class VoiceChangerApp extends StatelessWidget {
             themeMode: themeProvider.mode,
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
-            home: const HomeScreen(),
+            home: const MainNavShell(),
           );
         },
       ),
