@@ -43,7 +43,7 @@ class _MainNavShellState extends State<MainNavShell> {
     return Scaffold(
       body: IndexedStack(index: _index, children: _screens),
       bottomNavigationBar: BottomAppBar(
-        color: scheme.surfaceContainerHigh,
+        color: scheme.surfaceContainerHigh, elevation: 16, shadowColor: AppColors.seed,
         padding: EdgeInsets.zero,
         child: SizedBox(
           height: 68,
