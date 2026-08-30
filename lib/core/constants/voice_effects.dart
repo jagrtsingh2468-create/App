@@ -29,10 +29,7 @@ enum VoiceEffectType {
   autotune,
   chorusDoubler,
   bassBoost,
-  studioClean,
-  podcastVoice,
   glitch,
-  broadcastAnnouncer,
 }
 
 class VoiceEffect {
@@ -177,38 +174,12 @@ const List<VoiceEffect> kVoiceEffects = [
     ffmpegFilter: 'bass=g=12:f=110:w=0.6',
   ),
   VoiceEffect(
-    type: VoiceEffectType.studioClean,
-    label: 'Studio Clean',
-    emoji: '🎧',
-    icon: Icons.cleaning_services_rounded,
-    description: 'Noise-gated and lightly compressed',
-    ffmpegFilter: 'afftdn=nf=-25,acompressor=threshold=-18dB:ratio=3:attack=10:release=80',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.podcastVoice,
-    label: 'Podcast Voice',
-    emoji: '🎙️',
-    icon: Icons.podcasts_rounded,
-    description: 'Warm EQ with gentle compression',
-    ffmpegFilter:
-        'equalizer=f=200:width_type=o:width=1:g=3,equalizer=f=3000:width_type=o:width=1:g=2,acompressor=threshold=-20dB:ratio=2.5',
-  ),
-  VoiceEffect(
     type: VoiceEffectType.glitch,
     label: 'Glitch',
     emoji: '⚡',
     icon: Icons.bolt_rounded,
     description: 'Stuttering, digitally broken',
     ffmpegFilter: 'tremolo=f=15:d=0.7,acrusher=bits=4:mode=lin',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.broadcastAnnouncer,
-    label: 'Broadcast Announcer',
-    emoji: '📻',
-    icon: Icons.campaign_rounded,
-    description: 'Deep, compressed radio-announcer tone',
-    ffmpegFilter:
-        'asetrate=44100*0.85,aresample=44100,atempo=1.15,acompressor=threshold=-15dB:ratio=4,equalizer=f=150:width_type=o:width=1:g=4',
   ),
 ];
 
