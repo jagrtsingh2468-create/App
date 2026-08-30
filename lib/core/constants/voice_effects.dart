@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 ///   built-in convolution reverb without external impulse files).
 enum VoiceEffectType {
   none,
-  chipmunk,
   deepVoice,
   robot,
   echo,
@@ -26,18 +25,10 @@ enum VoiceEffectType {
   babyVoice,
   drunkVoice,
   underwater,
-  cartoonSqueak,
-  oldTimer,
-  ghostDemon,
-  giantOgre,
-  zombie,
-  werewolf,
   fairy,
   autotune,
   chorusDoubler,
   bassBoost,
-  whisperToShout,
-  chiptune8bit,
   studioClean,
   podcastVoice,
   glitch,
@@ -64,14 +55,6 @@ class VoiceEffect {
 
 /// Master list rendered by the effects grid, in display order.
 const List<VoiceEffect> kVoiceEffects = [
-  VoiceEffect(
-    type: VoiceEffectType.chipmunk,
-    label: 'Chipmunk',
-    emoji: '🐿️',
-    icon: Icons.graphic_eq_rounded,
-    description: 'High-pitched, fast and squeaky',
-    ffmpegFilter: 'asetrate=44100*1.5,aresample=44100,atempo=0.9',
-  ),
   VoiceEffect(
     type: VoiceEffectType.deepVoice,
     label: 'Deep Voice',
@@ -143,7 +126,7 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '👶',
     icon: Icons.child_care_rounded,
     description: 'High, small and playful',
-    ffmpegFilter: 'asetrate=44100*1.6,aresample=44100,atempo=0.9',
+    ffmpegFilter: 'asetrate=44100*1.5,aresample=44100,atempo=0.92,vibrato=f=4:d=0.25',
   ),
   VoiceEffect(
     type: VoiceEffectType.drunkVoice,
@@ -160,56 +143,6 @@ const List<VoiceEffect> kVoiceEffects = [
     icon: Icons.water_rounded,
     description: 'Muffled, submerged tone',
     ffmpegFilter: 'lowpass=f=700,vibrato=f=2:d=0.4,aecho=0.5:0.6:40:0.25',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.cartoonSqueak,
-    label: 'Cartoon Squeak',
-    emoji: '🐭',
-    icon: Icons.theater_comedy_rounded,
-    description: 'Extreme high-pitched squeak',
-    ffmpegFilter: 'asetrate=44100*1.9,aresample=44100,atempo=0.8',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.oldTimer,
-    label: 'Old Timer',
-    emoji: '👴',
-    icon: Icons.elderly_rounded,
-    description: 'Raspy, band-limited old radio voice',
-    ffmpegFilter:
-        'asetrate=44100*0.9,aresample=44100,atempo=1.05,highpass=f=300,lowpass=f=3400,afftdn=nf=-20',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.ghostDemon,
-    label: 'Ghost/Demon',
-    emoji: '👻',
-    icon: Icons.nightlight_round,
-    description: 'Deep, haunting and distant',
-    ffmpegFilter:
-        'asetrate=44100*0.6,aresample=44100,atempo=1.3,aecho=0.8:0.9:300:0.5',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.giantOgre,
-    label: 'Giant/Ogre',
-    emoji: '🗿',
-    icon: Icons.landscape_rounded,
-    description: 'Massive, booming and slow',
-    ffmpegFilter: 'asetrate=44100*0.55,aresample=44100,atempo=1.4,aecho=0.7:0.8:60:0.3',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.zombie,
-    label: 'Zombie',
-    emoji: '🧟',
-    icon: Icons.mood_bad_rounded,
-    description: 'Groaning, ragged growl',
-    ffmpegFilter: 'asetrate=44100*0.75,aresample=44100,atempo=1.15,afftdn=nf=-15,vibrato=f=2:d=0.3',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.werewolf,
-    label: 'Werewolf',
-    emoji: '🐺',
-    icon: Icons.pets_rounded,
-    description: 'Guttural, aggressive growl',
-    ffmpegFilter: 'asetrate=44100*0.65,aresample=44100,atempo=1.25,vibrato=f=5:d=0.5,aecho=0.6:0.7:50:0.3',
   ),
   VoiceEffect(
     type: VoiceEffectType.fairy,
@@ -242,22 +175,6 @@ const List<VoiceEffect> kVoiceEffects = [
     icon: Icons.graphic_eq_rounded,
     description: 'Heavy low-end emphasis',
     ffmpegFilter: 'bass=g=12:f=110:w=0.6',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.whisperToShout,
-    label: 'Whisper-to-Shout Dynamic',
-    emoji: '📢',
-    icon: Icons.surround_sound_rounded,
-    description: 'Compressed, punchy dynamic range',
-    ffmpegFilter: 'acompressor=threshold=-25dB:ratio=4:attack=5:release=50,volume=1.5',
-  ),
-  VoiceEffect(
-    type: VoiceEffectType.chiptune8bit,
-    label: '8-bit/Chiptune',
-    emoji: '🎮',
-    icon: Icons.sports_esports_rounded,
-    description: 'Crushed, retro game-console tone',
-    ffmpegFilter: 'acrusher=bits=6:mode=log:aa=0.5',
   ),
   VoiceEffect(
     type: VoiceEffectType.studioClean,
