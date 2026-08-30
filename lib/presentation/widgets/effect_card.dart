@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/voice_effects.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/effect_visuals.dart';
 
 /// A single tappable effect tile in the effects grid. Shows a selected
 /// state with a colored border + scale animation so users get immediate
@@ -47,7 +48,7 @@ class EffectCard extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(effect.icon, size: 32, color: isSelected ? scheme.onPrimaryContainer : AppColors.accent),
+                GlowIcon(effectId: effect.type.name, icon: effect.icon, size: 32),
                 const SizedBox(height: 8),
                 Text(
                   effect.label,
