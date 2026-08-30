@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Accent color per effect — drives the glow + gradient icon look.
 const Map<String, Color> kEffectColors = {
   'none': Color(0xFF64B5F6),
   'deepVoice': Color(0xFFBA68C8),
@@ -17,11 +16,10 @@ const Map<String, Color> kEffectColors = {
   'fairy': Color(0xFFE91E8C),
   'autotune': Color(0xFF26C6DA),
   'chorusDoubler': Color(0xFF7E57C2),
-  'bassBoost': Color(0xFF66BB6A),
+  'bassBoost': Color(0xFF29B6F6),
   'glitch': Color(0xFFEF476F),
 };
 
-/// Glowing gradient-tinted icon used on the effect picker.
 class GlowIcon extends StatelessWidget {
   final String effectId;
   final IconData icon;
@@ -91,4 +89,21 @@ class _AlienPainter extends CustomPainter {
       ..close();
 
     final clear = Paint()..blendMode = BlendMode.clear;
-eof
+    canvas.saveLayer(Offset.zero & size, Paint());
+    canvas.drawPath(head, fill);
+    _almondEye(canvas, Offset(w * 0.35, h * 0.45), w * 0.13, h * 0.19, clear);
+    _almondEye(canvas, Offset(w * 0.65, h * 0.45), w * 0.13, h * 0.19, clear);
+    canvas.restore();
+  }
+
+  void _almondEye(Canvas canvas, Offset c, double rx, double ry, Paint p) {
+    canvas.save();
+    canvas.translate(c.dx, c.dy);
+    canvas.rotate(-0.35);
+    canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: rx * 2, height: ry * 2), p);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _AlienPainter oldDelegate) => oldDelegate.color != color;
+}
