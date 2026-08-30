@@ -90,7 +90,7 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '👽',
     icon: Icons.blur_on_rounded,
     description: 'Wobbly, otherworldly voice',
-    ffmpegFilter:
+    ffmpegFilter: 'asetrate=44100*1.15,aresample=44100,atempo=0.95,aecho=0.5:0.6:20:0.3',
         'asetrate=44100*1.2,aresample=44100,vibrato=f=6:d=0.8,chorus=0.6:0.9:55:0.4:0.25:2',
   ),
   VoiceEffect(
@@ -123,7 +123,7 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '👶',
     icon: Icons.child_care_rounded,
     description: 'High, small and playful',
-    ffmpegFilter: 'asetrate=44100*1.5,aresample=44100,atempo=0.92,vibrato=f=4:d=0.25',
+    ffmpegFilter: 'asetrate=44100*1.45,aresample=44100,atempo=0.95',
   ),
   VoiceEffect(
     type: VoiceEffectType.drunkVoice,
@@ -131,7 +131,7 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '🥴',
     icon: Icons.sports_bar_rounded,
     description: 'Wobbly pitch and slurred timing',
-    ffmpegFilter: 'vibrato=f=3:d=0.6,atempo=0.88,aecho=0.6:0.7:80:0.3',
+    ffmpegFilter: 'atempo=0.82,aecho=0.6:0.7:80:0.3',
   ),
   VoiceEffect(
     type: VoiceEffectType.underwater,
@@ -139,7 +139,7 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '🫧',
     icon: Icons.water_rounded,
     description: 'Muffled, submerged tone',
-    ffmpegFilter: 'lowpass=f=700,vibrato=f=2:d=0.4,aecho=0.5:0.6:40:0.25',
+    ffmpegFilter: 'lowpass=f=400,asetrate=44100*0.92,aresample=44100,atempo=1.08,tremolo=f=3:d=0.4,aecho=0.5:0.6:25:0.35',
   ),
   VoiceEffect(
     type: VoiceEffectType.fairy,
@@ -147,7 +147,7 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '🧚',
     icon: Icons.auto_awesome_rounded,
     description: 'Light, airy and shimmering',
-    ffmpegFilter: 'asetrate=44100*1.7,aresample=44100,atempo=0.85,chorus=0.5:0.8:40:0.3:0.2:1.5',
+    ffmpegFilter: 'asetrate=44100*1.7,aresample=44100,atempo=0.85,aecho=0.4:0.5:15:0.2',
   ),
   VoiceEffect(
     type: VoiceEffectType.autotune,
@@ -155,7 +155,7 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '🎤',
     icon: Icons.tune_rounded,
     description: 'Pitch-snap, robotic-singer feel',
-    ffmpegFilter: 'vibrato=f=6:d=0.9,atempo=1.0',
+    ffmpegFilter: 'asetrate=44100*1.05,aresample=44100,atempo=0.97,aecho=0.3:0.4:10:0.15',
   ),
   VoiceEffect(
     type: VoiceEffectType.chorusDoubler,
@@ -163,7 +163,7 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '🎶',
     icon: Icons.content_copy_rounded,
     description: 'Layered, doubled voice',
-    ffmpegFilter: 'chorus=0.7:0.9:55:0.4:0.25:2',
+    ffmpegFilter: 'aecho=0.6:0.7:15|25:0.4|0.3',
   ),
   VoiceEffect(
     type: VoiceEffectType.bassBoost,
@@ -171,7 +171,7 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '🔊',
     icon: Icons.graphic_eq_rounded,
     description: 'Heavy low-end emphasis',
-    ffmpegFilter: 'bass=g=12:f=110:w=0.6',
+    ffmpegFilter: 'asetrate=44100*0.9,aresample=44100,atempo=1.11,volume=1.3',
   ),
   VoiceEffect(
     type: VoiceEffectType.glitch,
