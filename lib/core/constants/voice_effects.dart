@@ -91,7 +91,6 @@ const List<VoiceEffect> kVoiceEffects = [
     icon: Icons.blur_on_rounded,
     description: 'Wobbly, otherworldly voice',
     ffmpegFilter: 'asetrate=44100*1.15,aresample=44100,atempo=0.95,aecho=0.5:0.6:20:0.3',
-        'asetrate=44100*1.2,aresample=44100,vibrato=f=6:d=0.8,chorus=0.6:0.9:55:0.4:0.25:2',
   ),
   VoiceEffect(
     type: VoiceEffectType.helium,
