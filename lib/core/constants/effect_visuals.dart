@@ -82,24 +82,24 @@ class _AlienPainter extends CustomPainter {
     final fill = Paint()..color = color;
 
     final head = Path()
-      ..moveTo(w * 0.5, h * 0.02)
-      ..cubicTo(w * 0.12, h * 0.02, w * 0.06, h * 0.55, w * 0.28, h * 0.88)
-      ..cubicTo(w * 0.40, h * 1.02, w * 0.60, h * 1.02, w * 0.72, h * 0.88)
-      ..cubicTo(w * 0.94, h * 0.55, w * 0.88, h * 0.02, w * 0.5, h * 0.02)
+      ..moveTo(w * 0.5, h * 0.0)
+      ..cubicTo(w * 0.14, h * 0.0, w * 0.03, h * 0.42, w * 0.20, h * 0.74)
+      ..cubicTo(w * 0.30, h * 0.94, w * 0.70, h * 0.94, w * 0.80, h * 0.74)
+      ..cubicTo(w * 0.97, h * 0.42, w * 0.86, h * 0.0, w * 0.5, h * 0.0)
       ..close();
 
     final clear = Paint()..blendMode = BlendMode.clear;
     canvas.saveLayer(Offset.zero & size, Paint());
     canvas.drawPath(head, fill);
-    _almondEye(canvas, Offset(w * 0.35, h * 0.45), w * 0.13, h * 0.19, clear);
-    _almondEye(canvas, Offset(w * 0.65, h * 0.45), w * 0.13, h * 0.19, clear);
+    _almondEye(canvas, Offset(w * 0.32, h * 0.42), w * 0.155, h * 0.24, -0.45, clear);
+    _almondEye(canvas, Offset(w * 0.68, h * 0.42), w * 0.155, h * 0.24, 0.45, clear);
     canvas.restore();
   }
 
-  void _almondEye(Canvas canvas, Offset c, double rx, double ry, Paint p) {
+  void _almondEye(Canvas canvas, Offset c, double rx, double ry, double angle, Paint p) {
     canvas.save();
     canvas.translate(c.dx, c.dy);
-    canvas.rotate(-0.35);
+    canvas.rotate(angle);
     canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: rx * 2, height: ry * 2), p);
     canvas.restore();
   }
