@@ -43,17 +43,22 @@ class HomeScreen extends StatelessWidget {
   void _showEasterEgg(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('✨ Jagrit Productions'),
-        content: const Text('Built with care, one commit at a time.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Nice'),
-          ),
-        ],
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset('assets/images/jsb_easter_egg.png', fit: BoxFit.contain),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Nice', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       ),
     );
   }
