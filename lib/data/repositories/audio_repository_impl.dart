@@ -40,6 +40,17 @@ class AudioRepositoryImpl implements AudioRepository {
   Future<String?> importAudioFile() => _storageService.importAudioFile();
 
   @override
+  @override
+  Future<String> applyCustomFilter({
+    required String sourcePath,
+    required String ffmpegFilter,
+  }) {
+    return _effectsService.applyCustomFilter(
+      sourcePath: sourcePath,
+      ffmpegFilter: ffmpegFilter,
+    );
+  }
+
   Future<String> applyEffect({
     required String sourcePath,
     required VoiceEffectType effect,

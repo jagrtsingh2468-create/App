@@ -69,3 +69,40 @@ class AudioEffectsService {
     return Duration(milliseconds: (seconds * 1000).round());
   }
 }
+
+extension AudioEffectsServiceCustomFilter on AudioEffectsService {
+  /// Applies a raw, dynamically-built [ffmpegFilter] string to [sourcePath].
+  /// Used by the Editor screen's live sliders, where the filter graph is
+  /// assembled from pitch/speed/echo/reverb values rather than looked up
+  /// from the fixed [kVoiceEffects] list.
+  Future<String> applyCustomFilter({
+    required String sourcePath,
+    required String ffmpegFilter,
+  }) async {
+    final outputPath = await FileUtils.newTempPath(extension: 'm4a');
+
+    if (ffmpegFilter.trim().isEmpty) {
+      await File(sourcePath).copy(outputPath);
+      return outputPath;
+    }
+
+    final command =
+        '-y -i "$sourcePath" -af "$ffmpegFilter" -c:a aac -b:a 128k "$outputPath"';
+
+    final session = await FFmpegKit.execute(command);
+    final returnCode = await session.getReturnCode();
+
+    if (!ReturnCode.isSuccess(returnCode)) {
+      final logs = await session.getFailStackTrace();
+      throw ProcessingFailure(
+        'FFmpeg failed to apply editor preview. ${logs ?? ''}',
+      );
+    }
+
+    if (!await File(outputPath).exists()) {
+      throw const ProcessingFailure('Editor preview processing produced no output.');
+    }
+
+    return outputPath;
+  }
+}

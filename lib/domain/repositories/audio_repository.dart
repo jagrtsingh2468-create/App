@@ -22,6 +22,13 @@ abstract class AudioRepository {
   /// Applies [effect] to the audio at [sourcePath] and returns the path to
   /// the newly rendered output file. When [effect] is [VoiceEffectType.none]
   /// the source is simply copied through unchanged.
+  /// Applies a raw, dynamically-built ffmpeg audio-filter string to
+  /// [sourcePath]. Used by the Editor screen's live sliders.
+  Future<String> applyCustomFilter({
+    required String sourcePath,
+    required String ffmpegFilter,
+  });
+
   Future<String> applyEffect({
     required String sourcePath,
     required VoiceEffectType effect,

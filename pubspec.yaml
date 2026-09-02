@@ -15,7 +15,8 @@ dependencies:
 
   # ---- Audio recording / playback ----
   record: ^6.0.0                       # Records microphone input to file (AAC/WAV)
-  audioplayers: ^6.0.0                 # Plays processed audio, supports looping/seeking
+  audioplayers: ^6.0.0                    # Plays processed audio, supports looping/seeking
+  audio_waveforms: ^1.3.0                  # Extracts real waveform sample data for the Editor
 
   # ---- Audio effects processing ----
   ffmpeg_kit_flutter_new: ^4.1.0       # Maintained fork of ffmpeg_kit_flutter (original retired).
