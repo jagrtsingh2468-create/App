@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import '../../domain/repositories/audio_repository.dart';
 
 /// Drives the Editor screen: live pitch/speed/echo/reverb sliders that
 /// re-render a preview via ffmpeg after a short debounce, so dragging a
 /// slider doesn't fire a new ffmpeg process on every frame.
-class EditorProvider {
-  final AudioRepository_repository;
+class EditorProvider extends ChangeNotifier {
+  final AudioRepository _repository;
   EditorProvider(this._repository);
 
   String? sourcePath;
@@ -20,8 +21,6 @@ class EditorProvider {
   String? errorMessage;
 
   Timer? _debounce;
-  final _controller = StreamController<void>.broadcast();
-  Stream<void> get onChange => _controller.stream;
 
   void attachSource(String path) {
     sourcePath = path;
@@ -31,30 +30,30 @@ class EditorProvider {
     echo = 0.0;
     reverb = 0.0;
     errorMessage = null;
-    _controller.add(null);
+    notifyListeners();
   }
 
   void setPitch(double value) {
     pitch = value;
-    _controller.add(null);
+    notifyListeners();
     _scheduleDebounce();
   }
 
   void setSpeed(double value) {
     speed = value;
-    _controller.add(null);
+    notifyListeners();
     _scheduleDebounce();
   }
 
   void setEcho(double value) {
     echo = value;
-    _controller.add(null);
+    notifyListeners();
     _scheduleDebounce();
   }
 
   void setReverb(double value) {
     reverb = value;
-    _controller.add(null);
+    notifyListeners();
     _scheduleDebounce();
   }
 
@@ -100,7 +99,7 @@ class EditorProvider {
 
     isProcessing = true;
     errorMessage = null;
-    _controller.add(null);
+    notifyListeners();
 
     try {
       final filter = _buildFilter();
@@ -110,17 +109,18 @@ class EditorProvider {
       );
       previewPath = output;
       isProcessing = false;
-      _controller.add(null);
+      notifyListeners();
       await _repository.playAudio(output);
     } catch (e) {
       isProcessing = false;
       errorMessage = e.toString();
-      _controller.add(null);
+      notifyListeners();
     }
   }
 
+  @override
   void dispose() {
     _debounce?.cancel();
-    _controller.close();
+    super.dispose();
   }
 }
