@@ -9,7 +9,8 @@ import '../widgets/waveform_widget.dart';
 /// Lets the user pick a voice effect, preview the result, and save it.
 /// This is the screen most of the app's "magic" is visible on.
 class EffectsScreen extends StatefulWidget {
-  const EffectsScreen({super.key});
+  final VoidCallback? onBack;
+  const EffectsScreen({super.key, this.onBack});
 
   @override
   State<EffectsScreen> createState() => _EffectsScreenState();
@@ -25,7 +26,7 @@ class _EffectsScreenState extends State<EffectsScreen> {
     final provider = context.watch<RecorderProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.chooseEffect)),
+      appBar: AppBar(leading: widget.onBack != null ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: widget.onBack) : null, title: const Text(AppStrings.chooseEffect)),
       body: SafeArea(
         child: Column(
           children: [

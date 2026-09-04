@@ -21,12 +21,12 @@ class MainNavShell extends StatefulWidget {
 class _MainNavShellState extends State<MainNavShell> {
   int _index = 0;
 
-  static const _screens = [
-    HomeScreen(),
-    LibraryScreen(),
-    RecordScreen(),
-    EffectsScreen(),
-    EditorScreen(),
+  List<Widget> get _screens => [
+    const HomeScreen(),
+    const LibraryScreen(),
+    const RecordScreen(),
+    EffectsScreen(onBack: () => _onTap(0)),
+    EditorScreen(onBack: () => _onTap(0)),
   ];
 
   void _onTap(int i) {

@@ -17,7 +17,8 @@ import '../widgets/waveform_widget.dart';
 /// adjust (e.g. accept the path as a constructor arg and call attachSource
 /// in initState).
 class EditorScreen extends StatelessWidget {
-  const EditorScreen({super.key});
+  final VoidCallback? onBack;
+  const EditorScreen({super.key, this.onBack});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +27,7 @@ class EditorScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: onBack != null ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: onBack) : null,
         title: const Text('Editor'),
         actions: [
           if (editorProvider.isProcessing)
