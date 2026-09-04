@@ -4,100 +4,114 @@ import 'package:provider/provider.dart';
 import '../providers/editor_provider.dart';
 import '../widgets/waveform_widget.dart';
 
-/// Real Editor screen: waveform + pitch/speed/echo/reverb sliders,
-/// wired live to EditorProvider, with a play/pause preview button.
+/// Real Editor screen: waveform + pitch/speed/echo/reverb sliders wired to
+/// EditorProvider. Sliders auto-trigger a debounced ffmpeg re-render and
+/// playback (see EditorProvider._renderPreview) — there's no manual
+/// play/pause or Apply button, since the provider doesn't expose those.
+/// Shows a small processing indicator while a preview is rendering, and
+/// any error message the provider surfaces.
 ///
-/// Assumption: EditorProvider exposes filePath, pitch, speed, echo, reverb
-/// (doubles) plus setters (setPitch/setSpeed/setEcho/setReverb) and an
-/// isPlaying bool + togglePlayback() method. Adjust names below if yours
-/// differ — the structure will still hold.
+/// Assumption: whatever navigates to this screen has already called
+/// editorProvider.attachSource(recordingPath) — this screen doesn't set
+/// the source itself. Let me know if that's not how it's wired and I'll
+/// adjust (e.g. accept the path as a constructor arg and call attachSource
+/// in initState).
 class EditorScreen extends StatelessWidget {
   const EditorScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final editorProvider = context.watch<EditorProvider>();
+    final waveformPath = editorProvider.previewPath ?? editorProvider.sourcePath;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Editor')),
+      appBar: AppBar(
+        title: const Text('Editor'),
+        actions: [
+          if (editorProvider.isProcessing)
+            const Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            ),
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Waveform
-              Card(
-                clipBehavior: Clip.antiAlias,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: WaveformWidget(
-                    filePath: editorProvider.filePath,
-                    height: 100,
+              if (waveformPath == null)
+                const Expanded(
+                  child: Center(child: Text('No recording selected')),
+                )
+              else ...[
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: WaveformWidget(
+                      filePath: waveformPath,
+                      height: 100,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
+                const SizedBox(height: 8),
 
-              // Play / pause preview
-              Center(
-                child: IconButton.filled(
-                  iconSize: 40,
-                  icon: Icon(
-                    editorProvider.isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow,
+                if (editorProvider.errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      editorProvider.errorMessage!,
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    ),
                   ),
-                  onPressed: editorProvider.togglePlayback,
-                ),
-              ),
-              const SizedBox(height: 16),
 
-              Expanded(
-                child: ListView(
-                  children: [
-                    _EditorSlider(
-                      label: 'Pitch',
-                      icon: Icons.graphic_eq,
-                      value: editorProvider.pitch,
-                      min: 0.5,
-                      max: 2.0,
-                      onChanged: editorProvider.setPitch,
-                    ),
-                    _EditorSlider(
-                      label: 'Speed',
-                      icon: Icons.speed,
-                      value: editorProvider.speed,
-                      min: 0.5,
-                      max: 2.0,
-                      onChanged: editorProvider.setSpeed,
-                    ),
-                    _EditorSlider(
-                      label: 'Echo',
-                      icon: Icons.surround_sound,
-                      value: editorProvider.echo,
-                      min: 0.0,
-                      max: 1.0,
-                      onChanged: editorProvider.setEcho,
-                    ),
-                    _EditorSlider(
-                      label: 'Reverb',
-                      icon: Icons.blur_on,
-                      value: editorProvider.reverb,
-                      min: 0.0,
-                      max: 1.0,
-                      onChanged: editorProvider.setReverb,
-                    ),
-                  ],
+                Expanded(
+                  child: ListView(
+                    children: [
+                      _EditorSlider(
+                        label: 'Pitch',
+                        icon: Icons.graphic_eq,
+                        value: editorProvider.pitch,
+                        min: -0.5,
+                        max: 0.5,
+                        onChanged: editorProvider.setPitch,
+                      ),
+                      _EditorSlider(
+                        label: 'Speed',
+                        icon: Icons.speed,
+                        value: editorProvider.speed,
+                        min: 0.5,
+                        max: 2.0,
+                        onChanged: editorProvider.setSpeed,
+                      ),
+                      _EditorSlider(
+                        label: 'Echo',
+                        icon: Icons.surround_sound,
+                        value: editorProvider.echo,
+                        min: 0.0,
+                        max: 1.0,
+                        onChanged: editorProvider.setEcho,
+                      ),
+                      _EditorSlider(
+                        label: 'Reverb',
+                        icon: Icons.blur_on,
+                        value: editorProvider.reverb,
+                        min: 0.0,
+                        max: 1.0,
+                        onChanged: editorProvider.setReverb,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-
-              // Apply button
-              FilledButton.icon(
-                onPressed: () => editorProvider.applyCustomFilter(),
-                icon: const Icon(Icons.check),
-                label: const Text('Apply'),
-              ),
+              ],
             ],
           ),
         ),
