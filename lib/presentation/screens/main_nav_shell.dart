@@ -6,7 +6,7 @@ import 'effects_screen.dart';
 import 'home_screen.dart';
 import 'library_screen.dart';
 import 'record_screen.dart';
-import 'editor_placeholder_screen.dart';
+import 'editor_screen.dart';
 
 /// Persistent bottom-nav shell wrapping the app's 5 main destinations.
 /// Uses [IndexedStack] so switching tabs preserves each screen's state
@@ -26,7 +26,7 @@ class _MainNavShellState extends State<MainNavShell> {
     LibraryScreen(),
     RecordScreen(),
     EffectsScreen(),
-    EditorPlaceholderScreen(),
+    EditorScreen(),
   ];
 
   void _onTap(int i) {
