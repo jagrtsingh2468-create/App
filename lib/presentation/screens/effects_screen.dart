@@ -194,11 +194,9 @@ class _PreviewPlayerState extends State<_PreviewPlayer> {
       ),
       child: Column(
         children: [
-          WaveformWidget(
-            seed: widget.provider.previewPath ?? '',
-            position: widget.position,
-            duration: widget.duration,
-          ),
+      WaveformWidget(
+        filePath: widget.provider.previewPath ?? '',
+      ),
           const SizedBox(height: 12),
           IconButton.filled(
             iconSize: 32,
