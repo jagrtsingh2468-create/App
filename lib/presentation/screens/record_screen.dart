@@ -31,7 +31,7 @@ class _RecordScreenState extends State<RecordScreen> {
 
   void _goToEffects() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const EffectsScreen()),
+      MaterialPageRoute(builder: (_) => EffectsScreen(onBack: () => Navigator.of(context).pop())),
     );
   }
 

@@ -14,6 +14,7 @@ class WaveformWidget extends StatefulWidget {
   final double height;
   final Color waveColor;
   final Color liveWaveColor;
+  final Duration? currentPosition;
 
   const WaveformWidget({
     super.key,
@@ -21,6 +22,7 @@ class WaveformWidget extends StatefulWidget {
     this.height = 100,
     this.waveColor = Colors.grey,
     this.liveWaveColor = Colors.blueAccent,
+    this.currentPosition,
   });
 
   @override
@@ -53,6 +55,16 @@ class _WaveformWidgetState extends State<WaveformWidget> {
       if (mounted) {
         setState(() => _error = e.toString());
       }
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant WaveformWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_isLoaded &&
+        widget.currentPosition != null &&
+        widget.currentPosition != oldWidget.currentPosition) {
+      _playerController.seekTo(widget.currentPosition!.inMilliseconds);
     }
   }
 
