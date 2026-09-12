@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../providers/recorder_provider.dart';
+import '../providers/editor_provider.dart';
 import 'effects_screen.dart';
 import 'home_screen.dart';
 import 'library_screen.dart';
@@ -23,8 +24,8 @@ class _MainNavShellState extends State<MainNavShell> {
 
   List<Widget> get _screens => [
     const HomeScreen(),
-    const LibraryScreen(),
-    const RecordScreen(),
+    LibraryScreen(onOpenEditor: _openEditor),
+    RecordScreen(onGoToEffects: () => _onTap(3)),
     EffectsScreen(onBack: () => _onTap(0)),
     EditorScreen(onBack: () => _onTap(0)),
   ];
@@ -34,6 +35,11 @@ class _MainNavShellState extends State<MainNavShell> {
       context.read<RecorderProvider>().reset();
     }
     setState(() => _index = i);
+  }
+
+  void _openEditor(String path) {
+    context.read<EditorProvider>().attachSource(path);
+    setState(() => _index = 4);
   }
 
   @override

@@ -3,13 +3,13 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_strings.dart';
 import '../providers/recorder_provider.dart';
 import '../widgets/animated_record_button.dart';
-import 'effects_screen.dart';
 
 /// Handles live microphone capture. Once a recording is stopped (or the
 /// user arrived here with an imported file already set), it automatically
 /// advances to [EffectsScreen] for effect selection.
 class RecordScreen extends StatefulWidget {
-  const RecordScreen({super.key});
+  final VoidCallback? onGoToEffects;
+  const RecordScreen({super.key, this.onGoToEffects});
 
   @override
   State<RecordScreen> createState() => _RecordScreenState();
@@ -30,9 +30,7 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   void _goToEffects() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => EffectsScreen(onBack: () => Navigator.of(context).pop())),
-    );
+    widget.onGoToEffects?.call();
   }
 
   Future<void> _handleTap(RecorderProvider provider) async {
