@@ -33,6 +33,20 @@ class EditorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Clears the current source so the Editor screen can show its
+  /// recording picker again instead of the sliders.
+  void clearSource() {
+    _debounce?.cancel();
+    sourcePath = null;
+    previewPath = null;
+    pitch = 0.0;
+    speed = 1.0;
+    echo = 0.0;
+    reverb = 0.0;
+    errorMessage = null;
+    notifyListeners();
+  }
+
   void setPitch(double value) {
     pitch = value;
     notifyListeners();

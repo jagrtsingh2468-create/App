@@ -6,6 +6,7 @@ import '../../core/constants/voice_effects.dart';
 import '../providers/recorder_provider.dart';
 import '../widgets/effect_card.dart';
 import '../widgets/waveform_widget.dart';
+import '../widgets/save_recording_sheet.dart';
 
 /// Lets the user pick a voice effect, preview the result, and save it.
 /// This is the screen most of the app's "magic" is visible on.
@@ -72,7 +73,7 @@ class _EffectsScreenState extends State<EffectsScreen> {
       ),
       floatingActionButton: provider.stage == RecorderStage.previewReady
           ? FloatingActionButton.extended(
-              onPressed: () => _showSaveDialog(context, provider),
+              onPressed: () => _showSaveSheet(context, provider),
               icon: const Icon(Icons.save_rounded),
               label: const Text(AppStrings.saveRecording),
             )
@@ -80,40 +81,11 @@ class _EffectsScreenState extends State<EffectsScreen> {
     );
   }
 
-  Future<void> _showSaveDialog(
+  Future<void> _showSaveSheet(
     BuildContext context,
     RecorderProvider provider,
   ) async {
-    final effect = voiceEffectFor(provider.selectedEffect);
-    final controller = TextEditingController(
-      text: effect == null ? 'My Recording' : '${effect.label} Voice',
-    );
-
-    final title = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Name your recording'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(border: OutlineInputBorder()),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(AppStrings.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text(AppStrings.saveRecording),
-          ),
-        ],
-      ),
-    );
-
-    if (title == null || title.isEmpty || !mounted) return;
-
-    final saved = await provider.save(title);
+    final saved = await showSaveRecordingSheet(context, provider);
     if (!mounted) return;
 
     if (saved != null) {
@@ -121,10 +93,6 @@ class _EffectsScreenState extends State<EffectsScreen> {
         const SnackBar(content: Text(AppStrings.savedSuccess)),
       );
       Navigator.of(context).popUntil((route) => route.isFirst);
-    } else if (provider.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(provider.errorMessage!)),
-      );
     }
   }
 }
