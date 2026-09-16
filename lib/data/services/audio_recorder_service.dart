@@ -53,6 +53,12 @@ class AudioRecorderService {
 
   Future<bool> isRecording() => _recorder.isRecording();
 
+  /// Emits amplitude readings (in dBFS, roughly -45..0 for typical speech)
+  /// every 100ms while recording, for driving a live waveform visualizer.
+  Stream<double> get amplitudeStream => _recorder
+      .onAmplitudeChanged(const Duration(milliseconds: 100))
+      .map((amp) => amp.current);
+
   Future<void> dispose() async {
     await _recorder.dispose();
   }

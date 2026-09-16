@@ -16,6 +16,15 @@ class LibraryProvider extends ChangeNotifier {
     _deleteRecording = DeleteRecording(_repository);
     _shareRecording = ShareRecording(_repository);
     loadRecordings();
+    // Clear the "now playing" highlight once playback stops for any
+    // reason (reached the end, paused elsewhere, etc.) so the play/pause
+    // icon doesn't get stuck showing "pause" forever.
+    _repository.isPlayingStream.listen((playing) {
+      if (!playing && playingId != null) {
+        playingId = null;
+        notifyListeners();
+      }
+    });
   }
 
   List<Recording> recordings = [];

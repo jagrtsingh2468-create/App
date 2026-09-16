@@ -15,6 +15,10 @@ abstract class AudioRepository {
 
   Future<bool> isRecording();
 
+  /// Live amplitude readings (dBFS) while recording is active, for
+  /// driving a real-time waveform visualizer on the Record screen.
+  Stream<double> get recordingAmplitude;
+
   /// Lets the user pick an existing audio file from device storage.
   /// Returns null if the user cancelled the picker.
   Future<String?> importAudioFile();
@@ -35,6 +39,10 @@ abstract class AudioRepository {
   });
 
   Future<void> playAudio(String filePath);
+
+  /// Resumes playback from the current paused position, without
+  /// restarting from the beginning like [playAudio] does.
+  Future<void> resumeAudio();
   Future<void> pauseAudio();
   Future<void> stopAudio();
   Stream<Duration> get playbackPosition;

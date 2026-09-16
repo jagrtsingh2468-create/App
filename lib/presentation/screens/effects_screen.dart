@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_strings.dart';
@@ -175,12 +176,27 @@ class _PreviewPlayer extends StatefulWidget {
 }
 
 class _PreviewPlayerState extends State<_PreviewPlayer> {
+  StreamSubscription<Duration>? _positionSub;
+  StreamSubscription<Duration>? _durationSub;
+  StreamSubscription<bool>? _isPlayingSub;
+
   @override
   void initState() {
     super.initState();
-    widget.provider.positionStream.listen(widget.onPositionUpdate);
-    widget.provider.durationStream.listen(widget.onDurationUpdate);
-    widget.provider.isPlayingStream.listen(widget.onPlayingUpdate);
+    _positionSub = widget.provider.positionStream.listen(widget.onPositionUpdate);
+    _durationSub = widget.provider.durationStream.listen(widget.onDurationUpdate);
+    _isPlayingSub = widget.provider.isPlayingStream.listen(widget.onPlayingUpdate);
+  }
+
+  @override
+  void dispose() {
+    _positionSub?.cancel();
+    _durationSub?.cancel();
+    _isPlayingSub?.cancel();
+    // Stop the preview so audio doesn't keep playing in the background
+    // after this screen (or this player card) goes away.
+    widget.provider.stopPreview();
+    super.dispose();
   }
 
   @override

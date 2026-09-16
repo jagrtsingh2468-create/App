@@ -11,6 +11,7 @@ class RecordingTile extends StatelessWidget {
   final VoidCallback onPlayToggle;
   final VoidCallback onShare;
   final VoidCallback onDelete;
+  final VoidCallback? onEdit;
 
   const RecordingTile({
     super.key,
@@ -19,6 +20,7 @@ class RecordingTile extends StatelessWidget {
     required this.onPlayToggle,
     required this.onShare,
     required this.onDelete,
+    this.onEdit,
   });
 
   @override
@@ -60,6 +62,11 @@ class RecordingTile extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            IconButton(
+              onPressed: onEdit,
+              icon: const Icon(Icons.tune_rounded),
+              tooltip: 'Edit',
             ),
             IconButton(
               onPressed: onShare,

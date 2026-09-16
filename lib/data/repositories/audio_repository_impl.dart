@@ -37,6 +37,9 @@ class AudioRepositoryImpl implements AudioRepository {
   Future<bool> isRecording() => _recorderService.isRecording();
 
   @override
+  Stream<double> get recordingAmplitude => _recorderService.amplitudeStream;
+
+  @override
   Future<String?> importAudioFile() => _storageService.importAudioFile();
 
   @override
@@ -60,6 +63,9 @@ class AudioRepositoryImpl implements AudioRepository {
 
   @override
   Future<void> playAudio(String filePath) => _playerService.play(filePath);
+
+  @override
+  Future<void> resumeAudio() => _playerService.resume();
 
   @override
   Future<void> pauseAudio() => _playerService.pause();

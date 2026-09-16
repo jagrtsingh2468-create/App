@@ -39,10 +39,15 @@ class RecorderProvider extends ChangeNotifier {
   bool isPlaying = false;
   Duration position = Duration.zero;
   Duration duration = Duration.zero;
+  bool _previewStarted = false;
 
   Stream<Duration> get positionStream => _repository.playbackPosition;
   Stream<Duration> get durationStream => _repository.playbackDuration;
   Stream<bool> get isPlayingStream => _repository.isPlayingStream;
+
+  /// Live dBFS readings while [stage] is [RecorderStage.recording], for the
+  /// Record screen's real-time waveform.
+  Stream<double> get amplitudeStream => _repository.recordingAmplitude;
 
   Future<void> startRecording() async {
     try {
@@ -110,6 +115,7 @@ class RecorderProvider extends ChangeNotifier {
         effect: effect,
       );
       previewPath = output;
+      _previewStarted = false;
       stage = RecorderStage.previewReady;
       notifyListeners();
     } on Failure catch (e) {
@@ -122,7 +128,14 @@ class RecorderProvider extends ChangeNotifier {
   Future<void> playPreview() async {
     if (previewPath == null) return;
     try {
-      await _repository.playAudio(previewPath!);
+      if (_previewStarted) {
+        // Already playing this file once (now paused) — resume in place
+        // instead of restarting from 0:00.
+        await _repository.resumeAudio();
+      } else {
+        await _repository.playAudio(previewPath!);
+        _previewStarted = true;
+      }
     } on Failure catch (e) {
       errorMessage = e.message;
       notifyListeners();
@@ -131,7 +144,10 @@ class RecorderProvider extends ChangeNotifier {
 
   Future<void> pausePreview() => _repository.pauseAudio();
 
-  Future<void> stopPreview() => _repository.stopAudio();
+  Future<void> stopPreview() {
+    _previewStarted = false;
+    return _repository.stopAudio();
+  }
 
   Future<Recording?> save(String title) async {
     if (previewPath == null) return null;

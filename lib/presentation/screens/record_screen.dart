@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_strings.dart';
 import '../providers/recorder_provider.dart';
 import '../widgets/animated_record_button.dart';
+import '../widgets/live_waveform_widget.dart';
+import 'effects_screen.dart';
 
 /// Handles live microphone capture. Once a recording is stopped (or the
 /// user arrived here with an imported file already set), it automatically
@@ -29,8 +31,22 @@ class _RecordScreenState extends State<RecordScreen> {
     });
   }
 
+  /// When reached via the bottom-nav Record tab, [onGoToEffects] just
+  /// switches the shell's selected tab (no new route). When reached via
+  /// Home's "Record Voice"/"Import Audio" cards instead (a standalone
+  /// pushed route, outside the tab shell), there's no callback — fall
+  /// back to pushing EffectsScreen normally, with a working back button
+  /// that pops this pushed stack rather than the tab shell.
   void _goToEffects() {
-    widget.onGoToEffects?.call();
+    if (widget.onGoToEffects != null) {
+      widget.onGoToEffects!.call();
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => EffectsScreen(onBack: () => Navigator.of(context).pop()),
+        ),
+      );
+    }
   }
 
   Future<void> _handleTap(RecorderProvider provider) async {
@@ -77,7 +93,15 @@ class _RecordScreenState extends State<RecordScreen> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: LiveWaveformWidget(
+                      amplitudeStream: provider.amplitudeStream,
+                      isActive: isRecording,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                   AnimatedRecordButton(
                     isRecording: isRecording,
                     onTap: () => _handleTap(provider),

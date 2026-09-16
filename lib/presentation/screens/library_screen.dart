@@ -8,7 +8,8 @@ import '../widgets/recording_tile.dart';
 /// "My Recordings" screen: lists everything the user has saved, with
 /// play/share/delete actions per item.
 class LibraryScreen extends StatefulWidget {
-  const LibraryScreen({super.key});
+  final void Function(String path)? onOpenEditor;
+  const LibraryScreen({super.key, this.onOpenEditor});
 
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
@@ -119,6 +120,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   isPlaying: provider.playingId == recording.id,
                   onPlayToggle: () => provider.togglePlay(recording),
                   onShare: () => provider.share(recording),
+                  onEdit: widget.onOpenEditor == null ? null : () => widget.onOpenEditor!(recording.filePath),
                   onDelete: () => _confirmDelete(context, provider, recording),
                 );
               },
