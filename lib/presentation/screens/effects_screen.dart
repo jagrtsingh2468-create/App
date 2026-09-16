@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/constants/voice_effects.dart';
 import '../providers/recorder_provider.dart';
+import '../providers/library_provider.dart';
 import '../widgets/effect_card.dart';
 import '../widgets/waveform_widget.dart';
 import '../widgets/save_recording_sheet.dart';
@@ -92,6 +93,7 @@ class _EffectsScreenState extends State<EffectsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text(AppStrings.savedSuccess)),
       );
+      if (mounted) context.read<LibraryProvider>().loadRecordings();
       Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
