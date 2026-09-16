@@ -6,8 +6,8 @@ import '../../core/constants/voice_effects.dart';
 import '../../core/error/failures.dart';
 import '../providers/recorder_provider.dart';
 import '../providers/theme_provider.dart';
-import 'library_screen.dart';
 import 'record_screen.dart';
+import 'reverse_studio_screen.dart';
 import 'settings_screen.dart';
 
 /// App entry screen. Big hero header, two primary actions
@@ -78,11 +78,11 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
           ),
           IconButton(
-            tooltip: AppStrings.libraryTitle,
+            tooltip: 'Reverse Studio',
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const LibraryScreen()),
+              MaterialPageRoute(builder: (_) => const ReverseStudioScreen()),
             ),
-            icon: const Icon(Icons.library_music_rounded),
+            icon: const Icon(Icons.fast_rewind_rounded),
           ),
           IconButton(
             tooltip: 'Settings',

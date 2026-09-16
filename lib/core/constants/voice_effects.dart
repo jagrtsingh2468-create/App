@@ -24,6 +24,7 @@ enum VoiceEffectType {
   fastVoice,
   fairy,
   glitch,
+  reverse,
 }
 
 class VoiceEffect {
@@ -130,7 +131,21 @@ const List<VoiceEffect> kVoiceEffects = [
 
 /// Looks up a [VoiceEffect] definition by its enum type.
 /// Returns null for [VoiceEffectType.none] (i.e. "no effect applied").
+/// [VoiceEffectType.reverse] is handled here rather than in [kVoiceEffects]
+/// so it never shows up in the main Effects grid — Reverse Studio is its
+/// own separate feature, this just lets Library/Editor tiles label a
+/// reversed recording correctly.
 VoiceEffect? voiceEffectFor(VoiceEffectType type) {
   if (type == VoiceEffectType.none) return null;
+  if (type == VoiceEffectType.reverse) {
+    return const VoiceEffect(
+      type: VoiceEffectType.reverse,
+      label: 'Reverse',
+      emoji: '⏪',
+      icon: Icons.fast_rewind_rounded,
+      description: 'Played backwards',
+      ffmpegFilter: 'areverse',
+    );
+  }
   return kVoiceEffects.firstWhere((e) => e.type == type);
 }

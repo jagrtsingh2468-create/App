@@ -1,34 +1,55 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
-import '../../core/constants/voice_effects.dart';
 import '../../domain/entities/recording.dart';
-import '../providers/recorder_provider.dart';
 
-/// Shows an interactive bottom sheet for naming and saving the current
-/// preview: a gradient avatar of the chosen effect, a name field, and a
+/// Shows an interactive bottom sheet for naming and saving a processed
+/// clip: a gradient avatar (emoji of your choosing), a name field, and a
 /// full-width gradient button that morphs through idle -> saving -> saved
 /// states in place, instead of a plain AlertDialog with a static button.
 ///
+/// Generic over whatever produced the clip (an Effects preview, a
+/// Reverse Studio preview, etc) — the caller supplies [emoji],
+/// [defaultTitle], the actual [onSave] action, and how to read back an
+/// error message if it fails, rather than this sheet depending on any
+/// one provider type.
+///
 /// Returns the saved [Recording] on success, or null if the user
-/// cancelled or the save failed (in which case [RecorderProvider
-/// .errorMessage] will be set for the caller to surface).
+/// cancelled or the save failed (in which case [errorMessage] should
+/// return the caller's failure reason for this sheet to show inline).
 Future<Recording?> showSaveRecordingSheet(
-  BuildContext context,
-  RecorderProvider provider,
-) {
+  BuildContext context, {
+  required String emoji,
+  required String defaultTitle,
+  required Future<Recording?> Function(String title) onSave,
+  required String? Function() errorMessage,
+}) {
   return showModalBottomSheet<Recording?>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => _SaveRecordingSheet(provider: provider),
+    builder: (_) => _SaveRecordingSheet(
+      emoji: emoji,
+      defaultTitle: defaultTitle,
+      onSave: onSave,
+      errorMessage: errorMessage,
+    ),
   );
 }
 
 enum _SaveState { idle, saving, saved }
 
 class _SaveRecordingSheet extends StatefulWidget {
-  final RecorderProvider provider;
-  const _SaveRecordingSheet({required this.provider});
+  final String emoji;
+  final String defaultTitle;
+  final Future<Recording?> Function(String title) onSave;
+  final String? Function() errorMessage;
+
+  const _SaveRecordingSheet({
+    required this.emoji,
+    required this.defaultTitle,
+    required this.onSave,
+    required this.errorMessage,
+  });
 
   @override
   State<_SaveRecordingSheet> createState() => _SaveRecordingSheetState();
@@ -42,10 +63,7 @@ class _SaveRecordingSheetState extends State<_SaveRecordingSheet> {
   @override
   void initState() {
     super.initState();
-    final effect = voiceEffectFor(widget.provider.selectedEffect);
-    _controller = TextEditingController(
-      text: effect == null ? 'My Recording' : '${effect.label} Voice',
-    );
+    _controller = TextEditingController(text: widget.defaultTitle);
   }
 
   @override
@@ -63,14 +81,14 @@ class _SaveRecordingSheetState extends State<_SaveRecordingSheet> {
       _error = null;
     });
 
-    final saved = await widget.provider.save(title);
+    final saved = await widget.onSave(title);
 
     if (!mounted) return;
 
     if (saved == null) {
       setState(() {
         _state = _SaveState.idle;
-        _error = widget.provider.errorMessage ?? 'Could not save recording.';
+        _error = widget.errorMessage() ?? 'Could not save recording.';
       });
       return;
     }
@@ -83,8 +101,6 @@ class _SaveRecordingSheetState extends State<_SaveRecordingSheet> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final effect = voiceEffectFor(widget.provider.selectedEffect);
-    final emoji = effect?.emoji ?? '🎙️';
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -127,7 +143,7 @@ class _SaveRecordingSheetState extends State<_SaveRecordingSheet> {
                     ),
                   ),
                   child: Center(
-                    child: Text(emoji, style: const TextStyle(fontSize: 32)),
+                    child: Text(widget.emoji, style: const TextStyle(fontSize: 32)),
                   ),
                 ),
               ),

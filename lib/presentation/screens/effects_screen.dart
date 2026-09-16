@@ -86,14 +86,25 @@ class _EffectsScreenState extends State<EffectsScreen> {
     BuildContext context,
     RecorderProvider provider,
   ) async {
-    final saved = await showSaveRecordingSheet(context, provider);
+    final effect = voiceEffectFor(provider.selectedEffect);
+    final saved = await showSaveRecordingSheet(
+      context,
+      emoji: effect?.emoji ?? '🎙️',
+      defaultTitle: effect == null ? 'My Recording' : '${effect.label} Voice',
+      onSave: provider.save,
+      errorMessage: () => provider.errorMessage,
+    );
     if (!mounted) return;
 
     if (saved != null) {
+      // Refresh immediately so the new recording shows up in Library and
+      // the Editor's picker right away, without needing a manual pull-to-
+      // refresh — IndexedStack keeps those tabs alive in the background,
+      // so they won't reload on their own just by switching to them.
+      if (mounted) context.read<LibraryProvider>().loadRecordings();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text(AppStrings.savedSuccess)),
       );
-      if (mounted) context.read<LibraryProvider>().loadRecordings();
       Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
