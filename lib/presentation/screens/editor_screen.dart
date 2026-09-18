@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -13,9 +14,9 @@ import '../widgets/waveform_widget.dart';
 /// everything saved in the Library so the user can jump straight in from
 /// here instead of only reaching the Editor via Library's "Edit" icon.
 /// Once a source is attached, shows the waveform + pitch/speed/echo/reverb
-/// sliders wired to EditorProvider (auto-debounced ffmpeg re-render and
-/// playback — no manual play/pause or Apply button, since the provider
-/// doesn't expose those).
+/// sliders wired to EditorProvider, plus a manual play/pause button so
+/// nudging a slider repeatedly doesn't keep interrupting playback the way
+/// auto-play-on-every-change would.
 class EditorScreen extends StatefulWidget {
   final VoidCallback? onBack;
   const EditorScreen({super.key, this.onBack});
@@ -25,14 +26,32 @@ class EditorScreen extends StatefulWidget {
 }
 
 class _EditorScreenState extends State<EditorScreen> {
+  Duration _position = Duration.zero;
+  bool _isPlaying = false;
+  StreamSubscription<Duration>? _positionSub;
+  StreamSubscription<bool>? _isPlayingSub;
+
   @override
   void initState() {
     super.initState();
-    // Refresh the library list on every visit so a recording saved just
-    // before switching to this tab shows up in the picker immediately.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.read<LibraryProvider>().loadRecordings();
     });
+    final editorProvider = context.read<EditorProvider>();
+    _positionSub = editorProvider.positionStream.listen((p) {
+      if (mounted) setState(() => _position = p);
+    });
+    _isPlayingSub = editorProvider.isPlayingStream.listen((p) {
+      if (mounted) setState(() => _isPlaying = p);
+    });
+  }
+
+  @override
+  void dispose() {
+    _positionSub?.cancel();
+    _isPlayingSub?.cancel();
+    context.read<EditorProvider>().stopPreview();
+    super.dispose();
   }
 
   @override
@@ -78,9 +97,28 @@ class _EditorScreenState extends State<EditorScreen> {
                       clipBehavior: Clip.antiAlias,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: WaveformWidget(
-                          filePath: waveformPath,
-                          height: 100,
+                        child: Column(
+                          children: [
+                            WaveformWidget(
+                              filePath: waveformPath,
+                              height: 100,
+                              currentPosition: _position,
+                            ),
+                            const SizedBox(height: 12),
+                            IconButton.filled(
+                              iconSize: 32,
+                              onPressed: editorProvider.isProcessing
+                                  ? null
+                                  : () {
+                                      if (_isPlaying) {
+                                        editorProvider.pausePreview();
+                                      } else {
+                                        editorProvider.playPreview();
+                                      }
+                                    },
+                              icon: Icon(_isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded),
+                            ),
+                          ],
                         ),
                       ),
                     ),

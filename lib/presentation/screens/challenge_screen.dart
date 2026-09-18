@@ -69,12 +69,54 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: _buildForStage(context, provider),
+        child: Column(
+          children: [
+            if (provider.stage != ChallengeStage.idle)
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: _StepDots(currentStep: _stepIndexFor(provider.stage)),
+              ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) => FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 0.05),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  ),
+                  child: KeyedSubtree(
+                    key: ValueKey(provider.stage),
+                    child: _buildForStage(context, provider),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  int _stepIndexFor(ChallengeStage stage) {
+    switch (stage) {
+      case ChallengeStage.idle:
+      case ChallengeStage.recordingOriginal:
+      case ChallengeStage.processingOriginal:
+        return 0;
+      case ChallengeStage.readyToMimic:
+      case ChallengeStage.recordingMimic:
+      case ChallengeStage.processingMimic:
+        return 1;
+      case ChallengeStage.result:
+        return 2;
+    }
   }
 
   Widget _buildForStage(BuildContext context, ChallengeProvider provider) {
@@ -111,6 +153,52 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       case ChallengeStage.result:
         return _ResultStep(provider: provider, isPlaying: _isPlaying);
     }
+  }
+}
+
+class _StepDots extends StatelessWidget {
+  final int currentStep; // 0, 1, or 2
+  const _StepDots({required this.currentStep});
+
+  @override
+  Widget build(BuildContext context) {
+    const labels = ['Record', 'Mimic', 'Reveal'];
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(labels.length, (i) {
+        final isActive = i == currentStep;
+        final isDone = i < currentStep;
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                width: isActive ? 14 : 10,
+                height: isActive ? 14 : 10,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: (isActive || isDone)
+                      ? const LinearGradient(colors: [AppColors.seed, AppColors.accent])
+                      : null,
+                  color: (isActive || isDone) ? null : Theme.of(context).colorScheme.surfaceContainerHigh,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                labels[i],
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+                      color: isActive
+                          ? AppColors.seed
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ),
+        );
+      }),
+    );
   }
 }
 
@@ -278,6 +366,11 @@ class _ReadyToMimicStep extends StatelessWidget {
                   }
                 },
                 icon: Icon(isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                isPlaying ? 'Playing...' : 'Tap to listen again as many times as you like',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ],
           ),

@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import '../../core/error/failures.dart';
 import '../../domain/repositories/audio_repository.dart';
 
 /// Drives the Editor screen: live pitch/speed/echo/reverb sliders that
 /// re-render a preview via ffmpeg after a short debounce, so dragging a
-/// slider doesn't fire a new ffmpeg process on every frame.
+/// slider doesn't fire a new ffmpeg process on every frame. Playback is
+/// manual (via [playPreview]/[pausePreview]) rather than auto-playing on
+/// every slider tweak, so adjusting pitch repeatedly doesn't keep
+/// interrupting what you're listening to.
 class EditorProvider extends ChangeNotifier {
   final AudioRepository _repository;
   EditorProvider(this._repository);
@@ -19,8 +23,13 @@ class EditorProvider extends ChangeNotifier {
 
   bool isProcessing = false;
   String? errorMessage;
+  bool _previewStarted = false;
 
   Timer? _debounce;
+
+  Stream<Duration> get positionStream => _repository.playbackPosition;
+  Stream<Duration> get durationStream => _repository.playbackDuration;
+  Stream<bool> get isPlayingStream => _repository.isPlayingStream;
 
   void attachSource(String path) {
     sourcePath = path;
@@ -30,6 +39,7 @@ class EditorProvider extends ChangeNotifier {
     echo = 0.0;
     reverb = 0.0;
     errorMessage = null;
+    _previewStarted = false;
     notifyListeners();
   }
 
@@ -44,6 +54,7 @@ class EditorProvider extends ChangeNotifier {
     echo = 0.0;
     reverb = 0.0;
     errorMessage = null;
+    _previewStarted = false;
     notifyListeners();
   }
 
@@ -122,14 +133,38 @@ class EditorProvider extends ChangeNotifier {
         ffmpegFilter: filter,
       );
       previewPath = output;
+      // A fresh render replaces whatever was loaded before, so the next
+      // tap of Play should always start this new version from 0:00.
+      _previewStarted = false;
       isProcessing = false;
       notifyListeners();
-      await _repository.playAudio(output);
     } catch (e) {
       isProcessing = false;
       errorMessage = e.toString();
       notifyListeners();
     }
+  }
+
+  Future<void> playPreview() async {
+    if (previewPath == null) return;
+    try {
+      if (_previewStarted) {
+        await _repository.resumeAudio();
+      } else {
+        await _repository.playAudio(previewPath!);
+        _previewStarted = true;
+      }
+    } on Failure catch (e) {
+      errorMessage = e.message;
+      notifyListeners();
+    }
+  }
+
+  Future<void> pausePreview() => _repository.pauseAudio();
+
+  Future<void> stopPreview() {
+    _previewStarted = false;
+    return _repository.stopAudio();
   }
 
   @override
