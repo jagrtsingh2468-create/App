@@ -8,6 +8,7 @@ import '../providers/recorder_provider.dart';
 import '../providers/theme_provider.dart';
 import 'record_screen.dart';
 import 'reverse_studio_screen.dart';
+import 'challenge_screen.dart';
 import 'settings_screen.dart';
 
 /// App entry screen. Big hero header, two primary actions
@@ -156,6 +157,15 @@ class HomeScreen extends StatelessWidget {
                 title: AppStrings.importAudio,
                 subtitle: 'Pick an existing audio file to transform',
                 onTap: () => _importFile(context),
+              ),
+              const SizedBox(height: 16),
+              _PrimaryActionCard(
+                icon: Icons.quiz_rounded,
+                title: 'Reverse Challenge',
+                subtitle: 'Say it backwards — can you nail the reveal?',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ChallengeScreen()),
+                ),
               ),
               const SizedBox(height: 32),
               Text(

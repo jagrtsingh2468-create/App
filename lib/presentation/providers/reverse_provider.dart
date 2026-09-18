@@ -3,25 +3,29 @@ import '../../core/constants/voice_effects.dart';
 import '../../core/error/failures.dart';
 import '../../domain/entities/recording.dart';
 import '../../domain/repositories/audio_repository.dart';
+import '../../domain/usecases/record_audio.dart';
 import '../../domain/usecases/save_recording.dart';
 
-/// Drives Reverse Studio: pick a recording, play it backwards (via the
-/// same `applyCustomFilter` ffmpeg pipeline the Editor uses, with a plain
-/// `areverse` filter), preview it, and save the result as a new
-/// recording — reusing the same repository/use-case plumbing as
-/// [RecorderProvider] and [EditorProvider] rather than inventing new
-/// audio infrastructure.
+/// Drives Reverse Studio: pick a recording (or record a fresh one right
+/// here), play it backwards (via the same `applyCustomFilter` ffmpeg
+/// pipeline the Editor uses, with a plain `areverse` filter), preview it,
+/// and save the result as a new recording — reusing the same
+/// repository/use-case plumbing as [RecorderProvider] and
+/// [EditorProvider] rather than inventing new audio infrastructure.
 class ReverseProvider extends ChangeNotifier {
   final AudioRepository _repository;
+  late final RecordAudio _recordAudio;
   late final SaveRecording _saveRecording;
 
   ReverseProvider(this._repository) {
+    _recordAudio = RecordAudio(_repository);
     _saveRecording = SaveRecording(_repository);
   }
 
   String? sourcePath;
   String? previewPath;
   bool isProcessing = false;
+  bool isRecording = false;
   String? errorMessage;
   bool _previewStarted = false;
 
@@ -29,7 +33,11 @@ class ReverseProvider extends ChangeNotifier {
   Stream<Duration> get durationStream => _repository.playbackDuration;
   Stream<bool> get isPlayingStream => _repository.isPlayingStream;
 
-  /// Loads a recording and immediately starts reversing it.
+  /// Live dBFS readings while [isRecording] is true, for a live waveform
+  /// visualizer on the "record a new clip" step.
+  Stream<double> get amplitudeStream => _repository.recordingAmplitude;
+
+  /// Loads an existing recording and immediately starts reversing it.
   void attachSource(String path) {
     sourcePath = path;
     previewPath = null;
@@ -37,6 +45,34 @@ class ReverseProvider extends ChangeNotifier {
     _previewStarted = false;
     notifyListeners();
     _reverse();
+  }
+
+  /// Starts capturing a brand-new clip to reverse, instead of picking one
+  /// already saved to the Library.
+  Future<void> startRecordingNew() async {
+    try {
+      errorMessage = null;
+      await _recordAudio.start();
+      isRecording = true;
+      notifyListeners();
+    } on Failure catch (e) {
+      errorMessage = e.message;
+      notifyListeners();
+    }
+  }
+
+  /// Stops the fresh recording and feeds it straight into the same
+  /// reverse pipeline as picking a saved recording would.
+  Future<void> stopRecordingNew() async {
+    try {
+      final path = await _recordAudio.stop();
+      isRecording = false;
+      attachSource(path);
+    } on Failure catch (e) {
+      isRecording = false;
+      errorMessage = e.message;
+      notifyListeners();
+    }
   }
 
   /// Clears the current source so Reverse Studio can show its recording

@@ -6,6 +6,7 @@ import 'domain/repositories/audio_repository.dart';
 import 'presentation/providers/library_provider.dart';
 import 'presentation/providers/editor_provider.dart';
 import 'presentation/providers/reverse_provider.dart';
+import 'presentation/providers/challenge_provider.dart';
 import 'presentation/providers/recorder_provider.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/screens/main_nav_shell.dart';
@@ -49,6 +50,10 @@ class VoiceChangerApp extends StatelessWidget {
         ChangeNotifierProxyProvider<AudioRepository, ReverseProvider>(
           create: (context) => ReverseProvider(context.read<AudioRepository>()),
           update: (context, repo, previous) => previous ?? ReverseProvider(repo),
+        ),
+        ChangeNotifierProxyProvider<AudioRepository, ChallengeProvider>(
+          create: (context) => ChallengeProvider(context.read<AudioRepository>()),
+          update: (context, repo, previous) => previous ?? ChallengeProvider(repo),
         ),
 
         ChangeNotifierProxyProvider<AudioRepository, LibraryProvider>(
