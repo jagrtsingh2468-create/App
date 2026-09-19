@@ -6,9 +6,11 @@ import '../../core/constants/voice_effects.dart';
 import '../../core/error/failures.dart';
 import '../providers/recorder_provider.dart';
 import '../providers/theme_provider.dart';
+import '../providers/editor_provider.dart';
 import 'record_screen.dart';
 import 'reverse_studio_screen.dart';
-import 'challenge_screen.dart';
+import 'library_screen.dart';
+import 'editor_screen.dart';
 import 'settings_screen.dart';
 
 /// App entry screen. Big hero header, two primary actions
@@ -86,6 +88,24 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.fast_rewind_rounded),
           ),
           IconButton(
+            tooltip: AppStrings.libraryTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => LibraryScreen(
+                  onOpenEditor: (path) {
+                    context.read<EditorProvider>().attachSource(path);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => EditorScreen(onBack: () => Navigator.of(context).pop()),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.library_music_rounded),
+          ),
+          IconButton(
             tooltip: 'Settings',
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -157,15 +177,6 @@ class HomeScreen extends StatelessWidget {
                 title: AppStrings.importAudio,
                 subtitle: 'Pick an existing audio file to transform',
                 onTap: () => _importFile(context),
-              ),
-              const SizedBox(height: 16),
-              _PrimaryActionCard(
-                icon: Icons.quiz_rounded,
-                title: 'Reverse Challenge',
-                subtitle: 'Say it backwards — can you nail the reveal?',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ChallengeScreen()),
-                ),
               ),
               const SizedBox(height: 32),
               Text(
