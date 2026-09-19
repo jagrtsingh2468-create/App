@@ -8,6 +8,7 @@ import '../../core/utils/file_utils.dart';
 import '../../domain/entities/recording.dart';
 import '../providers/editor_provider.dart';
 import '../providers/library_provider.dart';
+import '../widgets/live_waveform_widget.dart';
 import '../widgets/waveform_widget.dart';
 
 /// Real Editor screen. When no recording is loaded, shows a picker over
@@ -86,9 +87,11 @@ class _EditorScreenState extends State<EditorScreen> {
         ],
       ),
       body: SafeArea(
-        child: waveformPath == null
-            ? const _RecordingPicker()
-            : Padding(
+        child: editorProvider.isRecording
+            ? _RecordNewStep(provider: editorProvider)
+            : (waveformPath == null
+                ? const _RecordingPicker()
+                : Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -171,7 +174,48 @@ class _EditorScreenState extends State<EditorScreen> {
                     ),
                   ],
                 ),
+              )),
+      ),
+    );
+  }
+}
+
+class _RecordNewStep extends StatelessWidget {
+  final EditorProvider provider;
+  const _RecordNewStep({required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Recording...',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 32),
+          LiveWaveformWidget(amplitudeStream: provider.amplitudeStream, isActive: true),
+          const SizedBox(height: 32),
+          GestureDetector(
+            onTap: provider.stopRecordingNew,
+            child: Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.redAccent,
+                boxShadow: [
+                  BoxShadow(color: Colors.redAccent.withValues(alpha: 0.5), blurRadius: 20, spreadRadius: 2),
+                ],
               ),
+              child: const Icon(Icons.stop_rounded, color: Colors.white, size: 34),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text('Tap to stop', style: Theme.of(context).textTheme.bodySmall),
+        ],
       ),
     );
   }
@@ -215,6 +259,12 @@ class _RecordingPicker extends StatelessWidget {
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
               ),
+              const SizedBox(height: 20),
+              OutlinedButton.icon(
+                onPressed: () => context.read<EditorProvider>().startRecordingNew(),
+                icon: const Icon(Icons.mic_rounded),
+                label: const Text('Record a New Clip'),
+              ),
             ],
           ),
         ),
@@ -225,9 +275,17 @@ class _RecordingPicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: OutlinedButton.icon(
+            onPressed: () => context.read<EditorProvider>().startRecordingNew(),
+            icon: const Icon(Icons.mic_rounded),
+            label: const Text('Record a New Clip'),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: Text(
-            'Pick a recording to edit',
+            'Or pick a recording to edit',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
         ),

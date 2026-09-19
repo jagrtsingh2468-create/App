@@ -460,7 +460,7 @@ class _ResultStepState extends State<_ResultStep> {
                   provider.reset();
                 },
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Try Again'),
+                label: const Text('Retry', overflow: TextOverflow.visible, softWrap: false),
               ),
             ),
             const SizedBox(width: 12),

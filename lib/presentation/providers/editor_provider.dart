@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../../core/error/failures.dart';
 import '../../domain/repositories/audio_repository.dart';
+import '../../domain/usecases/record_audio.dart';
 
 /// Drives the Editor screen: live pitch/speed/echo/reverb sliders that
 /// re-render a preview via ffmpeg after a short debounce, so dragging a
@@ -11,10 +12,14 @@ import '../../domain/repositories/audio_repository.dart';
 /// interrupting what you're listening to.
 class EditorProvider extends ChangeNotifier {
   final AudioRepository _repository;
-  EditorProvider(this._repository);
+  late final RecordAudio _recordAudio;
+  EditorProvider(this._repository) {
+    _recordAudio = RecordAudio(_repository);
+  }
 
   String? sourcePath;
   String? previewPath;
+  bool isRecording = false;
 
   double pitch = 0.0;   // -0.5 .. 0.5, 0 = no change
   double speed = 1.0;   // 0.5 .. 2.0, 1 = no change
@@ -31,6 +36,10 @@ class EditorProvider extends ChangeNotifier {
   Stream<Duration> get durationStream => _repository.playbackDuration;
   Stream<bool> get isPlayingStream => _repository.isPlayingStream;
 
+  /// Live dBFS readings while [isRecording] is true, for a live waveform
+  /// visualizer on the "record a new clip" step.
+  Stream<double> get amplitudeStream => _repository.recordingAmplitude;
+
   void attachSource(String path) {
     sourcePath = path;
     previewPath = null;
@@ -41,6 +50,34 @@ class EditorProvider extends ChangeNotifier {
     errorMessage = null;
     _previewStarted = false;
     notifyListeners();
+  }
+
+  /// Starts capturing a brand-new clip to edit, instead of picking one
+  /// already saved to the Library.
+  Future<void> startRecordingNew() async {
+    try {
+      errorMessage = null;
+      await _recordAudio.start();
+      isRecording = true;
+      notifyListeners();
+    } on Failure catch (e) {
+      errorMessage = e.message;
+      notifyListeners();
+    }
+  }
+
+  /// Stops the fresh recording and loads it straight into the sliders,
+  /// same as picking a saved recording would.
+  Future<void> stopRecordingNew() async {
+    try {
+      final path = await _recordAudio.stop();
+      isRecording = false;
+      attachSource(path);
+    } on Failure catch (e) {
+      isRecording = false;
+      errorMessage = e.message;
+      notifyListeners();
+    }
   }
 
   /// Clears the current source so the Editor screen can show its

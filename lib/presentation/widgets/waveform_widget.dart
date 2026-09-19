@@ -33,6 +33,7 @@ class _WaveformWidgetState extends State<WaveformWidget> {
   late final PlayerController _playerController;
   bool _isLoaded = false;
   String? _error;
+  bool _waveformEmpty = false;
 
   @override
   void initState() {
@@ -49,7 +50,14 @@ class _WaveformWidgetState extends State<WaveformWidget> {
         noOfSamples: 100,
       );
       if (mounted) {
-        setState(() => _isLoaded = true);
+        // Very short clips (a couple of seconds or less) sometimes yield
+        // no usable amplitude data from the native extractor, which would
+        // otherwise render as a confusing blank box with no explanation.
+        // Detect that case and show a plain message instead.
+        setState(() {
+          _isLoaded = true;
+          _waveformEmpty = _playerController.waveformData.isEmpty;
+        });
       }
     } catch (e) {
       if (mounted) {
@@ -92,6 +100,19 @@ class _WaveformWidgetState extends State<WaveformWidget> {
       return SizedBox(
         height: widget.height,
         child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_waveformEmpty) {
+      return SizedBox(
+        height: widget.height,
+        child: Center(
+          child: Text(
+            'Waveform preview unavailable for this clip — playback still works.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+          ),
+        ),
       );
     }
 
