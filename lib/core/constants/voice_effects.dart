@@ -25,6 +25,9 @@ enum VoiceEffectType {
   fairy,
   glitch,
   reverse,
+  girlVoice,
+  womanVoice,
+  manVoice,
 }
 
 class VoiceEffect {
@@ -126,6 +129,30 @@ const List<VoiceEffect> kVoiceEffects = [
     icon: Icons.bolt_rounded,
     description: 'Stuttering, digitally broken',
     ffmpegFilter: 'tremolo=f=15:d=0.7,acrusher=bits=4:mode=lin',
+  ),
+  VoiceEffect(
+    type: VoiceEffectType.girlVoice,
+    label: 'Girl Voice',
+    emoji: '👧',
+    icon: Icons.face_3_rounded,
+    description: 'Natural, youthful higher pitch',
+    ffmpegFilter: 'asetrate=44100*1.45,aresample=44100,atempo=0.88',
+  ),
+  VoiceEffect(
+    type: VoiceEffectType.womanVoice,
+    label: 'Woman Voice',
+    emoji: '👩',
+    icon: Icons.face_3_rounded,
+    description: 'Natural adult female pitch',
+    ffmpegFilter: 'asetrate=44100*1.25,aresample=44100,atempo=0.92',
+  ),
+  VoiceEffect(
+    type: VoiceEffectType.manVoice,
+    label: 'Man Voice',
+    emoji: '👨',
+    icon: Icons.face_rounded,
+    description: 'Natural adult male pitch',
+    ffmpegFilter: 'asetrate=44100*0.85,aresample=44100,atempo=1.05',
   ),
 ];
 
