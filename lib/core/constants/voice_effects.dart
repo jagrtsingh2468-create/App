@@ -12,6 +12,18 @@ import 'package:flutter/material.dart';
 /// - `aecho` adds echo: in_gain:out_gain:delay(ms):decay
 /// - Reverb is approximated with chained `aecho` taps (FFmpeg has no
 ///   built-in convolution reverb without external impulse files).
+/// - `bass`/`treble` are real shelving EQ filters (gain in dB at a corner
+///   frequency); `highpass`/`lowpass` are real cutoff filters. All four
+///   are standard FFmpeg filters, unlike formant shifting or true ring
+///   modulation, which need filters (e.g. `rubberband`) this app's
+///   bundled FFmpeg build isn't confirmed to include — so effects here
+///   stick to asetrate/atempo pitch tricks plus these EQ filters rather
+///   than risk a filter that silently fails on-device.
+/// - The "natural" voices (Girl/Woman/Man) fully correct playback speed
+///   back to the original pace after their pitch shift, so they read as
+///   a genuine pitch change rather than a speed effect; the "character"
+///   voices (Deep Voice, Helium, Fairy) deliberately keep some of that
+///   speed shift for personality.
 enum VoiceEffectType {
   none,
   deepVoice,
@@ -28,6 +40,9 @@ enum VoiceEffectType {
   girlVoice,
   womanVoice,
   manVoice,
+  monster,
+  megaphone,
+  chipmunk,
 }
 
 class VoiceEffect {
@@ -56,7 +71,8 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '🗿',
     icon: Icons.record_voice_over_rounded,
     description: 'Low, slow and powerful',
-    ffmpegFilter: 'asetrate=44100*0.7,aresample=44100,atempo=1.1',
+    ffmpegFilter:
+        'asetrate=44100*0.7,aresample=44100,atempo=1.1,lowpass=f=8000,bass=gain=3:frequency=160',
   ),
   VoiceEffect(
     type: VoiceEffectType.robot,
@@ -136,7 +152,8 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '👧',
     icon: Icons.face_3_rounded,
     description: 'Natural, youthful higher pitch',
-    ffmpegFilter: 'asetrate=44100*1.45,aresample=44100,atempo=0.88',
+    ffmpegFilter:
+        'asetrate=44100*1.33,aresample=44100,atempo=0.75,highpass=f=160,treble=gain=2:frequency=4000',
   ),
   VoiceEffect(
     type: VoiceEffectType.womanVoice,
@@ -144,7 +161,8 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '👩',
     icon: Icons.face_3_rounded,
     description: 'Natural adult female pitch',
-    ffmpegFilter: 'asetrate=44100*1.25,aresample=44100,atempo=0.92',
+    ffmpegFilter:
+        'asetrate=44100*1.26,aresample=44100,atempo=0.79,highpass=f=140,treble=gain=1.5:frequency=4000',
   ),
   VoiceEffect(
     type: VoiceEffectType.manVoice,
@@ -152,7 +170,32 @@ const List<VoiceEffect> kVoiceEffects = [
     emoji: '👨',
     icon: Icons.face_rounded,
     description: 'Natural adult male pitch',
-    ffmpegFilter: 'asetrate=44100*0.85,aresample=44100,atempo=1.05',
+    ffmpegFilter: 'asetrate=44100*0.84,aresample=44100,atempo=1.19,bass=gain=2:frequency=150',
+  ),
+  VoiceEffect(
+    type: VoiceEffectType.monster,
+    label: 'Monster',
+    emoji: '👹',
+    icon: Icons.sentiment_very_dissatisfied_rounded,
+    description: 'Deep, gravelly growl',
+    ffmpegFilter:
+        'asetrate=44100*0.63,aresample=44100,atempo=1.2,bass=gain=5:frequency=120,acrusher=bits=8:mode=lin',
+  ),
+  VoiceEffect(
+    type: VoiceEffectType.megaphone,
+    label: 'Megaphone',
+    emoji: '📻',
+    icon: Icons.radio_rounded,
+    description: 'Tinny, bullhorn/radio tone',
+    ffmpegFilter: 'highpass=f=400,lowpass=f=3500,acrusher=bits=10:mode=lin',
+  ),
+  VoiceEffect(
+    type: VoiceEffectType.chipmunk,
+    label: 'Chipmunk',
+    emoji: '🐿️',
+    icon: Icons.pets_rounded,
+    description: 'High-pitched and quick',
+    ffmpegFilter: 'asetrate=44100*1.78,aresample=44100,atempo=0.702',
   ),
 ];
 
